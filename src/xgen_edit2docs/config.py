@@ -50,6 +50,9 @@ class Settings(BaseSettings):
     # Server
     host: str = "0.0.0.0"
     port: int = 8000
+    # Comma-separated browser origins allowed to call the API. Include the
+    # frontend origin when it is hosted separately from this service.
+    cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
 
     # Default language for new projects when none is specified
     default_lang: str = "en-US"

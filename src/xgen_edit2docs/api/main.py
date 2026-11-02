@@ -31,6 +31,7 @@ import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from ..config import get_settings
 from ..i18n import default_catalog
@@ -105,6 +106,22 @@ app = FastAPI(
     ),
     version="0.1.0",
     lifespan=lifespan,
+)
+
+# Browser frontends send a CORS preflight when using JSON and custom auth/API
+# key headers. Without this middleware, OPTIONS requests (including /health)
+# are rejected with 405 before the actual request is made.
+_cors_origins = [
+    origin.strip()
+    for origin in get_settings().cors_origins.split(",")
+    if origin.strip()
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=_cors_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 install_error_handlers(app)
